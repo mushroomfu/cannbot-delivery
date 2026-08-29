@@ -1,0 +1,23 @@
+# 在 ~/.dsh/profiles/desktop/cordis.patch.yml 中追加本段，
+# 并把 xApiKey 换成你自己的 cannbot 虚拟密钥（vk-...）。
+
+# dsh-cannbot-gateway：cannbot 网关路由（x-api-vkey 在此配置，JWT 自动从
+# ~/.cannbot/session.json 轮询刷新并写入 llm-pi-ai 的 providers.cannbot）
+- id: cannbot-gateway
+  config:
+    enabled: true
+    route: cannbot
+    displayName: Cannbot
+    xApiKey: vk-xxxxxxxxxxxxxxxx        # ← 替换为你的 cannbot 虚拟密钥
+    gatewayURL: https://cannbot.hicann.cn/gateway/compatible-mode/v1
+    sessionFile: ~/.cannbot/session.json
+    pluginType: OpenCodeGUI
+    models:
+      - id: deepseek-v4-flash
+        name: DeepSeek-V4-Flash
+        contextWindow: 1048576
+        maxTokens: 393216
+      - id: deepseek-v4-pro
+        name: DeepSeek-V4-Pro
+        contextWindow: 1048576
+        maxTokens: 393216

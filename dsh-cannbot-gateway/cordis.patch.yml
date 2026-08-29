@@ -1,0 +1,4 @@
+# Bundle patch layer: load the package's main entry as a host plugin row.
+- insert:
+    - id: cannbot-gateway
+      name: dsh-cannbot-gateway
