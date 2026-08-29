@@ -1,14 +1,15 @@
-# 在 ~/.dsh/profiles/desktop/cordis.patch.yml 中追加本段，
-# 并把 xApiKey 换成你自己的 cannbot 虚拟密钥（vk-...）。
+# 在 ~/.dsh/profiles/desktop/cordis.patch.yml 中追加本段。
+# 虚拟密钥推荐装完后在前端「设置 → 插件 → 插件配置 → Cannbot 网关」卡片里填写
+# （保存进本机凭据库，热生效）；若想走文件配置，取消 xApiKey 一行的注释并填入 vk-...。
 
-# dsh-cannbot-gateway：cannbot 网关路由（x-api-vkey 在此配置，JWT 自动从
-# ~/.cannbot/session.json 轮询刷新并写入 llm-pi-ai 的 providers.cannbot）
+# dsh-cannbot-gateway：cannbot 网关路由（JWT 自动从 ~/.cannbot/session.json
+# 轮询刷新并写入 llm-pi-ai 的 providers.cannbot）
 - id: cannbot-gateway
   config:
     enabled: true
     route: cannbot
     displayName: Cannbot
-    xApiKey: vk-xxxxxxxxxxxxxxxx        # ← 替换为你的 cannbot 虚拟密钥
+    # xApiKey: vk-xxxxxxxx        # 可选：文件侧兜底密钥；推荐用前端卡片填写
     gatewayURL: https://cannbot.hicann.cn/gateway/compatible-mode/v1
     sessionFile: ~/.cannbot/session.json
     pluginType: OpenCodeGUI
