@@ -4,6 +4,8 @@
 
 当前包含 **`dsh-cannbot-gateway`** —— 一个 dsh-desktop cordis 插件：把 cannbot 的 OpenAI 兼容网关注册为 `llm-pi-ai` 的 provider 路由，模型选择器中出现 **Cannbot** 分组，桌面端与网页版同时可用。
 
+此外还包含 **[`zcode/`](zcode/)** —— 把同一 cannbot 网关接入智谱 **ZCode**（桌面端 + 终端 CLI）的配置脚本、`/vk` 斜杠命令与使用指南，DeepSeek V4 与 GLM 5.x 系列均实测可用。
+
 ## 特性
 
 - **前端可视化配置（v0.2.0+）**：设置 → 插件 → 插件配置 → **Cannbot 网关** 卡片，虚拟密钥就地修改、保存即热生效，无需改文件、无需重启
@@ -186,6 +188,16 @@ Authorization: Bearer <session.json 里的 accessToken>
 - dsh-desktop（Electron 窗口）与 dsh 网页版（浏览器访问本机 webserver）同时验证通过
 - 前端卡片在 v0.2.0 于「设置 → 插件 → 插件配置」实测验证：密钥写入凭据库、配置热生效、对话往返均通过
 - Windows 10/11；理论兼容 macOS/Linux（未验证，`sessionFile` 路径支持 `~` 展开）
+
+## 接入 ZCode
+
+ZCode（智谱）无插件机制，走自定义 provider 路线：把 cannbot 网关配置为 `openai-compatible` provider，`x-api-vkey` 通过 provider 的 `headers` 字段注入。一条命令完成安装：
+
+```bash
+node ~/.zcode/cannbot-sync.mjs          # 首次先从本仓库 zcode/ 目录复制过去
+```
+
+完整步骤、手动配置模板、`/vk` 斜杠命令与排查表见 [`zcode/README.md`](zcode/README.md)。
 
 ## License
 
