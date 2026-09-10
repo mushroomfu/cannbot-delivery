@@ -53,7 +53,7 @@ plugin_type: OpenCodeGUI           ← 来源标识
    ```json
    {
      "dependencies": {
-       "dsh-cannbot-gateway": "file:vendor/dsh-cannbot-gateway",
+       "dsh-cannbot-gateway": "link:vendor/dsh-cannbot-gateway",
        ...
      },
      "dsh": {
@@ -160,7 +160,8 @@ Authorization: Bearer <session.json 里的 accessToken>
 ## 注意事项
 
 - **虚拟密钥（`vk-...`）是敏感凭据**：不要提交到任何仓库、不要截图分享。本仓库所有示例均使用占位符。前端保存的密钥落在本机 `~/.dsh/.credentials.yaml`，同步/备份 `.dsh` 目录时注意避开该文件。
-- **升级到 v0.2.0**：覆盖 `vendor/dsh-cannbot-gateway/` 后需要重新同步依赖——`file:` 依赖是安装时快照拷贝，重新执行一次 `pnpm install --no-frozen-lockfile`（或把 `node_modules/dsh-cannbot-gateway` 手动替换为指向 `vendor/` 的目录联接），再重启 dsh-desktop。
+- **升级插件**：覆盖 `vendor/dsh-cannbot-gateway/` 后需要重新同步依赖——推荐把 `package.json` 里的依赖写成 `"dsh-cannbot-gateway": "link:vendor/dsh-cannbot-gateway"`（真实符号链接，改 `vendor/` 即生效）；若用 `file:` 协议则是安装时快照拷贝，每次覆盖源码后都要重新执行 `pnpm install --no-frozen-lockfile`。改完重启 dsh-desktop。
+- **cannbot-toolkit ≥2.0 迁移了登录态**（v0.2.1 起自动兼容）：cannbot VS Code 插件 2.0 会把 `session.json` 从 `~/.cannbot/` **移动**到 `~/.local/share/opencode/`。插件按「显式配置 → `~/.local/share/opencode/session.json` → `~/.cannbot/session.json`」的顺序探测，两代位置都能用；仍想固定路径时在前端卡片「登录态文件」里显式填写。
 - **JWT 有效期 24 小时**，由 cannbot 登录态决定。插件每 5 秒轮询 `session.json`，你在 cannbot VS Code 插件重新登录后 dsh 自动跟随；未登录（文件缺失或无 `accessToken`）时插件不写路由，恢复登录后 5 秒内自动注册。
 - **不要在 settings.yaml 里手工维护 `cannbot:` 段**：路由由插件全权管理，手工段会在插件写入时被覆盖，且其 JWT 过期后会造成难排查的 401。`settings.yaml` 的 `cannbot-gateway:` 段属于插件设置命名空间，由前端卡片维护，同样不要手改。
 - **旧模型已下线**：cannbot 官方 OpenCode 插件示例中的 `deepseek-v3`、`deepseek-r1` 已不可用（网关返回 403 `Model not allowed`），请以 models/list API 的结果为准。

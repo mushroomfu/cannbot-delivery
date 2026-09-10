@@ -1,6 +1,6 @@
 {
   "name": "dsh-cannbot-gateway",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Register the cannbot OpenAI-compatible gateway as an llm-pi-ai provider route: virtual key editable in the frontend 插件配置 card (stored in the credentials domain), Bearer JWT auto-refreshed from ~/.cannbot/session.json.",
   "type": "module",
   "main": "lib/index.js",

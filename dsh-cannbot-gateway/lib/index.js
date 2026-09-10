@@ -32,7 +32,9 @@ const NAME = "cannbot-gateway";
 const NS = NAME;
 
 const DEFAULT_GATEWAY = "https://cannbot.hicann.cn/gateway/compatible-mode/v1";
-const DEFAULT_SESSION = "~/.cannbot/session.json";
+/** cannbot-toolkit ≥2.0 迁移后的登录态位置（优先），1.x 的旧位置作兜底。 */
+const DEFAULT_SESSION = "~/.local/share/opencode/session.json";
+const SESSION_FALLBACK = "~/.cannbot/session.json";
 const DEFAULT_VK_REF = "CANNBOT_VK";
 
 const DEFAULT_MODELS = [
@@ -46,7 +48,7 @@ export const Config = Schema.object({
 	route: Schema.string().default("cannbot").description("llm-pi-ai 中的路由键名"),
 	displayName: Schema.string().default("Cannbot").description("模型选择器分组名"),
 	gatewayURL: Schema.string().default(DEFAULT_GATEWAY).description("OpenAI 兼容网关地址"),
-	sessionFile: Schema.string().default(DEFAULT_SESSION).description("cannbot 登录态文件（JWT 来源）"),
+	sessionFile: Schema.string().default(DEFAULT_SESSION).description("cannbot 登录态文件（JWT 来源，留默认自动探测新/旧位置）"),
 	pluginType: Schema.string().default("OpenCodeGUI").description("plugin_type 请求头"),
 	pollIntervalMs: Schema.number().default(5000).description("session.json 轮询间隔（毫秒）"),
 	xApiKeyEnv: Schema.string().default(DEFAULT_VK_REF).description("虚拟密钥的凭据引用名（前端保存到这里）"),
@@ -68,9 +70,31 @@ function nonEmpty(value) {
 	return typeof value === "string" && value.trim().length > 0;
 }
 
-function normalizeSessionFile(path) {
-	const trimmed = nonEmpty(path) ? path.trim() : DEFAULT_SESSION;
-	return trimmed.startsWith("~") ? join(homedir(), trimmed.slice(1)) : trimmed;
+function expandHome(path) {
+	return path.startsWith("~") ? join(homedir(), path.slice(1)) : path;
+}
+
+/**
+ * 登录态候选路径：显式配置优先，其后是 cannbot-toolkit 2.x 的新位置与 1.x 的旧位置。
+ * 升级迁移（~/.cannbot → ~/.local/share/opencode）因此不会打断路由。
+ */
+function sessionCandidates(value) {
+	const list = [];
+	if (nonEmpty(value?.sessionFile)) list.push(expandHome(value.sessionFile.trim()));
+	for (const candidate of [DEFAULT_SESSION, SESSION_FALLBACK]) {
+		const expanded = expandHome(candidate);
+		if (!list.includes(expanded)) list.push(expanded);
+	}
+	return list;
+}
+
+/** 依次读候选路径，返回第一个带有效 accessToken 的文件。 */
+function readSessionToken(candidates) {
+	for (const file of candidates) {
+		const token = readAccessToken(file);
+		if (token) return { token, file };
+	}
+	return null;
 }
 
 function readAccessToken(sessionFile) {
@@ -162,12 +186,13 @@ function apply(ctx, entry) {
 				}
 				return;
 			}
-			const sessionFile = normalizeSessionFile(value?.sessionFile);
-			const token = readAccessToken(sessionFile);
+			const candidates = sessionCandidates(value);
+			const session = readSessionToken(candidates);
+			const token = session?.token ?? null;
 			const signature = JSON.stringify([vk, token, value?.route, value?.displayName, value?.gatewayURL, value?.pluginType, value?.models]);
 			if (signature === lastSignature) return;
 			if (!token) {
-				logger.warn("%s: %s 中暂无 accessToken，等待下次轮询", NAME, sessionFile);
+				logger.warn("%s: 候选登录态文件均无 accessToken（%s），等待下次轮询", NAME, candidates.join(" / "));
 				return;
 			}
 			const route = nonEmpty(value?.route) ? value.route.trim() : "cannbot";
@@ -189,7 +214,7 @@ function apply(ctx, entry) {
 			lastVk = vk;
 			lastToken = token;
 			lastSignature = signature;
-			logger.info("%s: 路由 %s 已就绪（模型 %s，密钥来源 %s，JWT 已注入）", NAME, route, profile.models.map((m) => m.id).join("/"), vk === value?.xApiKey?.trim() ? "组装层" : `凭据 ${ref}`);
+			logger.info("%s: 路由 %s 已就绪（模型 %s，密钥来源 %s，JWT 来自 %s）", NAME, route, profile.models.map((m) => m.id).join("/"), vk === value?.xApiKey?.trim() ? "组装层" : `凭据 ${ref}`, session?.file ?? "?");
 		};
 
 		const pollMs = Number.isFinite(base?.pollIntervalMs) && base.pollIntervalMs >= 1000
