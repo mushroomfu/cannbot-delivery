@@ -3,40 +3,40 @@
  * (https://cannbot.hicann.cn/gateway/compatible-mode/v1) as an `llm-pi-ai`
  * provider route.
  *
- * Adapted for the DeepSeek Harness 0.2.0-rc.x composition (cordis 4 +
- * `@deepseek-ai/dsh-settings`): `apply(ctx, config)` export form, settings
- * namespace registration through `ctx.settings`, and the `credentials`
- * service for the virtual key.
+ * Adapted for the DeepSeek Harness 0.2.0-rc.x composition:
+ *   - `apply(ctx, config)` receives the loader row's config already resolved
+ *     against the exported `Config` schema (defaults filled in by the loader);
+ *     there is no per-plugin settings namespace to register — plugin
+ *     configuration IS the composition entry, and the Plugins page card edits
+ *     the entry's volatile fields through the settings service.
+ *   - The route is written with `settings.update("llm-pi-ai", {providers})`:
+ *     `providers` is a volatile field of the llm-pi-ai entry, so the write is
+ *     hot-applied and persisted into the profile composition, and the llm-pi-ai
+ *     row reloads with the route.
+ *   - The Plugins page card edits `displayName` / `gatewayURL` / `sessionFile`
+ *     (volatile here), plus the virtual key through the credentials domain.
+ *     Editing them reloads this entry, so `apply` runs again and rewrites the
+ *     route — no separate watch channel is needed.
  *
  * Auth mirrors the cannbot OpenCode plugin: the gateway requires BOTH
  *   - `x-api-vkey: <virtual key>`    → credential ref (default CANNBOT_VK),
  *                                      editable in the Plugins page card;
  *                                      falls back to the loader-row `xApiKey`
  *   - `Authorization: Bearer <JWT>`  → read from the cannbot session file
- *                                      (new cannbot-toolkit ≥2.0 location
- *                                      first, 1.x fallback second)
- *
- * Configuration is a settings namespace (`cannbot-gateway`) whose composition
- * base is the loader-row `config:` block; the Plugins page card writes the
- * user layer, and the virtual key itself is written through the credentials
- * domain so it never rides a settings document. The session file is polled,
- * so a fresh login in the cannbot VS Code extension propagates into dsh
- * without touching anything.
- *
- * The route is written through the settings service (`llm-pi-ai` namespace),
- * which validates it against the adapter schema and hot-reloads it. The
- * plugin re-writes the route on every boot and on every change, so the route
- * does not depend on the user layer persisting across restarts.
+ *                                      (cannbot-toolkit ≥2.0 location first,
+ *                                      1.x fallback second), polled every 5s
+ *                                      so a fresh login propagates unchanged.
  */
 
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
+// The deployment fork of schemastery: `.volatile()` marks live-editable fields
+// and the harness importer resolves this first-party name for profile plugins.
 import Schema from "@deepseek-ai/schemastery";
 
 const NAMESPACE = "llm-pi-ai";
 const NAME = "cannbot-gateway";
-const NS = NAME;
 
 const DEFAULT_GATEWAY = "https://cannbot.hicann.cn/gateway/compatible-mode/v1";
 /** cannbot-toolkit ≥2.0 迁移后的登录态位置（优先），1.x 的旧位置作兜底。 */
@@ -49,16 +49,19 @@ const DEFAULT_MODELS = [
 	{ id: "deepseek-v4-pro", name: "DeepSeek-V4-Pro", contextWindow: 1048576, maxTokens: 393216 },
 ];
 
-/** The settings namespace the Plugins page card edits. */
+/**
+ * The plugin's composition config. Volatile fields are the ones the Plugins
+ * page card edits live; everything else is maintained in cordis.patch.yml.
+ */
 export const Config = Schema.object({
 	enabled: Schema.boolean().default(true).description("启用 cannbot 路由"),
 	route: Schema.string().default("cannbot").description("llm-pi-ai 中的路由键名"),
-	displayName: Schema.string().default("Cannbot").description("模型选择器分组名"),
-	gatewayURL: Schema.string().default(DEFAULT_GATEWAY).description("OpenAI 兼容网关地址"),
-	sessionFile: Schema.string().default(DEFAULT_SESSION).description("cannbot 登录态文件（JWT 来源，留默认自动探测新/旧位置）"),
+	displayName: Schema.string().default("Cannbot").volatile().description("模型选择器分组名"),
+	gatewayURL: Schema.string().default(DEFAULT_GATEWAY).volatile().description("OpenAI 兼容网关地址"),
+	sessionFile: Schema.string().default(DEFAULT_SESSION).volatile().description("cannbot 登录态文件（JWT 来源，留默认自动探测新/旧位置）"),
 	pluginType: Schema.string().default("OpenCodeGUI").description("plugin_type 请求头"),
 	pollIntervalMs: Schema.number().default(5000).description("session.json 轮询间隔（毫秒）"),
-	xApiKeyEnv: Schema.string().default(DEFAULT_VK_REF).description("虚拟密钥的凭据引用名（前端保存到这里）"),
+	xApiKeyEnv: Schema.string().default(DEFAULT_VK_REF).volatile().description("虚拟密钥的凭据引用名"),
 	xApiKey: Schema.string().role("secret").description("虚拟密钥 vk-...（兼容旧配置的兜底；推荐在前端填写）"),
 	models: Schema.array(
 		Schema.object({
@@ -74,6 +77,11 @@ const inject = ["settings", "credentials"];
 
 function nonEmpty(value) {
 	return typeof value === "string" && value.trim().length > 0;
+}
+
+/** Volatile fields resolve to lazy wrappers; unwrap them (and nested wrappers) to plain values. */
+function plainValue(value) {
+	return value !== null && typeof value === "object" && typeof value.get === "function" ? plainValue(value.get()) : value;
 }
 
 function expandHome(path) {
@@ -141,17 +149,32 @@ function buildProfile(value, vk, token) {
 }
 
 function apply(ctx, entry) {
-	const base = entry ?? {};
+	// The loader hands us this entry's config resolved against Config (defaults included);
+	// volatile fields arrive as lazy wrappers, so normalize everything to plain values.
+	const config = Object.fromEntries(Object.entries(entry ?? {}).map(([key, value]) => [key, plainValue(value)]));
 	const logger = ctx.logger;
 
 	ctx.inject(["settings"], (sctx) => {
-		const scope = sctx.settings.register(NS, Config, { base });
 		const credentialsCtx = ctx.credentials;
 
 		let stopping = false;
-		let lastVk = null;
-		let lastToken = null;
 		let lastSignature = "";
+
+		/**
+		 * Volatile-field edits from the Plugins page card are applied to the fiber
+		 * config in place (no apply re-run); the settings service announces them
+		 * with `settings/document-updated`. Re-read the live volatile fields from
+		 * the describe projection and merge them over this apply's composition
+		 * config, so the route always reflects what the page shows.
+		 */
+		const freshConfig = () => {
+			try {
+				const row = sctx.settings.describe().find((row) => row.ns === NAME);
+				return row ? { ...config, ...row.value } : config;
+			} catch {
+				return config;
+			}
+		};
 
 		const vkRefOf = (value) => (nonEmpty(value?.xApiKeyEnv) ? value.xApiKeyEnv.trim() : DEFAULT_VK_REF);
 
@@ -181,13 +204,13 @@ function apply(ctx, entry) {
 		};
 
 		const sync = async (trigger) => {
-			const value = scope.get();
+			const value = freshConfig();
 			if (value?.enabled === false) return;
 			const ref = vkRefOf(value);
 			let vk = await readCredential(ref);
 			if (vk === null && nonEmpty(value?.xApiKey)) vk = value.xApiKey.trim();
 			if (!vk) {
-				if (lastVk !== null || trigger !== "poll") {
+				if (trigger !== "poll") {
 					logger.warn("%s: 未配置虚拟密钥（凭据 %s 为空且组装层无 xApiKey），路由暂不注册", NAME, ref);
 				}
 				return;
@@ -209,7 +232,9 @@ function apply(ctx, entry) {
 					await sctx.settings.update(NAMESPACE, { providers: { [route]: profile } });
 					break;
 				} catch (error) {
-					if (attempt < 60 && /not registered/i.test(String(error?.message))) {
+					// The llm-pi-ai entry may not be up yet during early boot; rapid saves
+					// can also collide with the HMR transaction the write itself opened.
+					if (attempt < 60 && /not registered|No configurable plugin entry|HMR transactions/i.test(String(error?.message))) {
 						await new Promise((resolve) => setTimeout(resolve, 1000));
 						continue;
 					}
@@ -217,43 +242,42 @@ function apply(ctx, entry) {
 					return;
 				}
 			}
-			lastVk = vk;
-			lastToken = token;
 			lastSignature = signature;
 			logger.info("%s: 路由 %s 已就绪（模型 %s，密钥来源 %s，JWT 来自 %s）", NAME, route, profile.models.map((m) => m.id).join("/"), vk === value?.xApiKey?.trim() ? "组装层" : `凭据 ${ref}`, session?.file ?? "?");
 		};
 
-		const pollMs = Number.isFinite(base?.pollIntervalMs) && base.pollIntervalMs >= 1000
-			? Math.floor(base.pollIntervalMs)
+		const pollMs = Number.isFinite(config?.pollIntervalMs) && config.pollIntervalMs >= 1000
+			? Math.floor(config.pollIntervalMs)
 			: 5000;
 		const timer = setInterval(() => {
 			void sync("poll");
 		}, pollMs);
 		if (typeof timer?.unref === "function") timer.unref();
 
-		const offWatch = scope.watch(() => {
-			void sync("config");
-		});
 		const offCredential = typeof ctx.on === "function"
 			? ctx.on("credentials/reference-updated", (ref) => {
-				const value = scope.get();
-				if (ref === vkRefOf(value)) void sync("credential");
+				if (ref === vkRefOf(freshConfig())) void sync("credential");
+			})
+			: undefined;
+		const offDocUpdated = typeof ctx.on === "function"
+			? ctx.on("settings/document-updated", (ns) => {
+				if (ns === NAME) void sync("config");
 			})
 			: undefined;
 
 		ctx.effect(() => () => {
 			stopping = true;
 			clearInterval(timer);
-			offWatch?.();
 			if (typeof offCredential === "function") offCredential();
-			// 卸载/禁用时移除本插件写入的路由，避免残留过期 JWT（关停途中失败可忽略）。
-			const value = scope.get();
-			const route = nonEmpty(value?.route) ? value.route.trim() : "cannbot";
+			if (typeof offDocUpdated === "function") offDocUpdated();
+			// 卸载/禁用时移除本插件写入的路由，避免残留过期 JWT（条目重载也会触发，
+			// 新一代 apply 会立即重写，短暂窗口无碍）。
+			const route = nonEmpty(config?.route) ? config.route.trim() : "cannbot";
 			void sctx.settings?.mutate?.(NAMESPACE, [{ op: "unset", path: ["providers", route] }])?.catch?.(() => {});
 		}, `${NAME}:teardown`);
 
-		logger.info("%s: 已加载（gateway=%s，配置基底层来自 loader 行，可在前端“插件配置”修改）", NAME, nonEmpty(base?.gatewayURL) ? base.gatewayURL : DEFAULT_GATEWAY);
-		void seedCredential(vkRefOf(base), base?.xApiKey).then(() => sync("startup"));
+		logger.info("%s: 已加载（gateway=%s，配置来自 loader 行；displayName/gatewayURL/sessionFile 可在前端“插件配置”修改）", NAME, nonEmpty(config?.gatewayURL) ? config.gatewayURL : DEFAULT_GATEWAY);
+		void seedCredential(vkRefOf(config), config?.xApiKey).then(() => sync("startup"));
 	});
 }
 

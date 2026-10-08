@@ -2,13 +2,13 @@
 
 把 [cannbot](https://cannbot.hicann.cn)（CANN 网关）的 DeepSeek 等模型接入 **dsh-desktop**（DeepSeek Harness Desktop）。
 
-当前包含 **`dsh-cannbot-gateway`** —— 一个 dsh-desktop cordis 插件：把 cannbot 的 OpenAI 兼容网关注册为 `llm-pi-ai` 的 provider 路由，模型选择器中出现 **Cannbot** 分组，桌面端与网页版同时可用。
+当前包含 **`dsh-cannbot-gateway`** —— 一个 dsh 桌面版 cordis 插件：把 cannbot 的 OpenAI 兼容网关注册为 `llm-pi-ai` 的 provider 路由，模型选择器中出现 **Cannbot** 分组，桌面端与网页版同时可用。**v0.3.2 适配新版 DeepSeek Harness `0.2.0-rc.x`；v0.2.x 面向旧版 dsh-desktop 2.0.3**（两代插件的设置页/凭据 API 不兼容，请按所装版本选择插件大版本）。
 
 此外还包含 **[`zcode/`](zcode/)** —— 把同一 cannbot 网关接入智谱 **ZCode**（桌面端 + 终端 CLI）的配置脚本、`/vk` 斜杠命令与使用指南，DeepSeek V4 与 GLM 5.x 系列均实测可用。
 
 ## 特性
 
-- **前端可视化配置（v0.2.0+）**：设置 → 插件 → 插件配置 → **Cannbot 网关** 卡片，虚拟密钥就地修改、保存即热生效，无需改文件、无需重启
+- **前端可视化配置（v0.2.0+）**：插件页面 → **Cannbot 网关** 卡片（0.2.0-rc.x 在「插件」面板详情页，旧版 2.0.3 在 设置 → 插件 → 插件配置），虚拟密钥就地修改、保存即热生效，无需改文件、无需重启
 - **虚拟密钥存本机凭据库**：前端保存的 `vk-...` 写入 `.credentials.yaml`（与 DeepSeek/Zenmux 等密钥同库），绝不进入设置文档，也绝不上传前端回显
 - **Bearer JWT 自动刷新**：每 5 秒轮询 `~/.cannbot/session.json`，cannbot 侧重新登录后自动跟进，无需改任何文件
 - **桌面端 + 网页版同时生效**：插件运行在宿主侧，Electron 窗口与浏览器（`http://127.0.0.1:43120/`）共享同一条请求链路
@@ -31,7 +31,7 @@ plugin_type: OpenCodeGUI           ← 来源标识
 
 **前提**：
 
-- dsh-desktop v2.x，且至少成功启动过一次（已生成 `~/.dsh/profiles/desktop/`）
+- dsh 桌面版：**DeepSeek Harness `0.2.0-rc.x` 配 v0.3.2 插件；旧版 dsh-desktop 2.0.3 配 v0.2.x 插件**，且至少成功启动过一次（已生成 `~/.dsh/profiles/desktop/`）
 - 网络可达 `cannbot.hicann.cn`
 - 已在 cannbot VS Code 插件中登录过（生成 `~/.cannbot/session.json`）
 - 拥有 cannbot 虚拟密钥 `vk-...`（若配置过 cannbot 的 OpenCode 插件，`~/.local/share/opencode/auth.json` 的 `cannbot.key` 就是它）
@@ -53,7 +53,7 @@ plugin_type: OpenCodeGUI           ← 来源标识
    ```json
    {
      "dependencies": {
-       "dsh-cannbot-gateway": "link:vendor/dsh-cannbot-gateway",
+       "dsh-cannbot-gateway": "file:vendor/dsh-cannbot-gateway",
        ...
      },
      "dsh": {
@@ -74,7 +74,7 @@ plugin_type: OpenCodeGUI           ← 来源标识
    pnpm install --no-frozen-lockfile
    ```
 
-4. 编辑 `~/.dsh/profiles/desktop/cordis.patch.yml`，追加插件 loader 行（完整示例见 [`examples/cordis-patch.example.yml`](examples/cordis-patch.example.yml)）。虚拟密钥可以在这里填（`xApiKey`），也可以不填、装完后在前端「插件配置」卡片里填（推荐，保存即生效）：
+4. 编辑 `~/.dsh/profiles/desktop/cordis.patch.yml`，追加插件 loader 行（完整示例见 [`examples/cordis-patch.example.yml`](examples/cordis-patch.example.yml)）。虚拟密钥**不再写在这里**——装完后在前端「Cannbot 网关」卡片里填（推荐，保存即生效），或确认凭据库 `CANNBOT_VK` 引用已配置：
 
    ```yaml
    - id: cannbot-gateway
@@ -83,7 +83,6 @@ plugin_type: OpenCodeGUI           ← 来源标识
        route: cannbot
        displayName: Cannbot
        gatewayURL: https://cannbot.hicann.cn/gateway/compatible-mode/v1
-       sessionFile: ~/.cannbot/session.json
        pluginType: OpenCodeGUI
        models:
          - id: deepseek-v4-flash
@@ -96,19 +95,21 @@ plugin_type: OpenCodeGUI           ← 来源标识
            maxTokens: 393216
    ```
 
-5. 重启 dsh-desktop，打开 **设置 → 插件 → 插件配置 → 「Cannbot 网关」卡片**，在「虚拟密钥（x-api-vkey）」里填入 `vk-...` 并保存——保存即生效，模型选择器立刻出现 **Cannbot** 分组。
+   `sessionFile` 同样可省略：插件默认自动探测 cannbot-toolkit ≥2.0 的 `~/.local/share/opencode/session.json` 与 1.x 的 `~/.cannbot/session.json`。
 
-也可以查看日志确认：
+5. 重启 dsh，打开**插件 → 「Cannbot 网关」**（旧版 2.0.3 在 设置 → 插件 → 插件配置），在「虚拟密钥（x-api-vkey）」里填入 `vk-...` 并保存——保存即生效，模型选择器立刻出现 **Cannbot** 分组。
 
-```
-%APPDATA%/DSH Desktop/logs/dsh-YYYY-MM-DD.log
-```
-
-应能看到：
+也可以查看日志确认。新版 DeepSeek Harness 在：
 
 ```
-[I] [cannbot-gateway] cannbot-gateway: 已加载（gateway=...，配置基底层来自 loader 行，可在前端"插件配置"修改）
-[I] [cannbot-gateway] cannbot-gateway: 路由 cannbot 已就绪（模型 ..., 密钥来源 凭据 CANNBOT_VK，JWT 已注入）
+%APPDATA%/@deepseek-ai/dsh-desktop/
+```
+
+旧版 dsh-desktop 2.0.3 在 `%APPDATA%/DSH Desktop/logs/dsh-YYYY-MM-DD.log`。应能看到：
+
+```
+[I] [cannbot-gateway] cannbot-gateway: 已加载（gateway=...，配置基底层来自 loader 行，可在前端“插件配置”修改）
+[I] [cannbot-gateway] cannbot-gateway: 路由 cannbot 已就绪（模型 ..., 密钥来源 凭据 CANNBOT_VK，JWT 来自 ...）
 ```
 
 ## 配置参考
@@ -121,7 +122,7 @@ plugin_type: OpenCodeGUI           ← 来源标识
 | `gatewayURL` | `https://cannbot.hicann.cn/gateway/compatible-mode/v1` | OpenAI 兼容网关地址 |
 | `xApiKeyEnv` | `CANNBOT_VK` | 虚拟密钥的**凭据引用名**（前端卡片把密钥写到这个引用下） |
 | `xApiKey` | （空） | 虚拟密钥兜底值：仅当上面的凭据引用未配置时使用；推荐改用前端卡片填写 |
-| `sessionFile` | `~/.cannbot/session.json` | cannbot 登录态文件，自动轮询读取 `accessToken` |
+| `sessionFile` | （空 = 自动探测） | cannbot 登录态文件，自动轮询读取 `accessToken`；留默认依次探测 `~/.local/share/opencode/session.json`（toolkit ≥2.0）与 `~/.cannbot/session.json`（1.x） |
 | `pluginType` | `OpenCodeGUI` | `plugin_type` 请求头的值 |
 | `pollIntervalMs` | `5000` | session.json 轮询间隔（毫秒，最小 1000） |
 | `models` | deepseek-v4-flash / deepseek-v4-pro | 模型列表（`id`、`name`、`contextWindow`、`maxTokens`） |
@@ -130,7 +131,7 @@ plugin_type: OpenCodeGUI           ← 来源标识
 
 ## 在前端修改配置（推荐）
 
-v0.2.0 起插件带浏览器半侧：**设置 → 插件 → 插件配置 → 「Cannbot 网关」卡片**，桌面端与网页版都有。
+v0.2.0 起插件带浏览器半侧：**插件 → 「Cannbot 网关」**（0.2.0-rc.x 在插件面板详情页；旧版 2.0.3 在 设置 → 插件 → 插件配置），桌面端与网页版都有。
 
 可就地修改并保存（保存即热生效，**无需重启**）：
 
@@ -160,9 +161,8 @@ Authorization: Bearer <session.json 里的 accessToken>
 ## 注意事项
 
 - **虚拟密钥（`vk-...`）是敏感凭据**：不要提交到任何仓库、不要截图分享。本仓库所有示例均使用占位符。前端保存的密钥落在本机 `~/.dsh/.credentials.yaml`，同步/备份 `.dsh` 目录时注意避开该文件。
-- **升级插件**：覆盖 `vendor/dsh-cannbot-gateway/` 后需要重新同步依赖——推荐把 `package.json` 里的依赖写成 `"dsh-cannbot-gateway": "link:vendor/dsh-cannbot-gateway"`（真实符号链接，改 `vendor/` 即生效）；若用 `file:` 协议则是安装时快照拷贝，每次覆盖源码后都要重新执行 `pnpm install --no-frozen-lockfile`。改完重启 dsh-desktop。
-- **cannbot-toolkit ≥2.0 迁移了登录态**（v0.2.1 起自动兼容）：cannbot VS Code 插件 2.0 会把 `session.json` 从 `~/.cannbot/` **移动**到 `~/.local/share/opencode/`。插件按「显式配置 → `~/.local/share/opencode/session.json` → `~/.cannbot/session.json`」的顺序探测，两代位置都能用；仍想固定路径时在前端卡片「登录态文件」里显式填写。
-- **JWT 有效期 24 小时**，由 cannbot 登录态决定。插件每 5 秒轮询 `session.json`，你在 cannbot VS Code 插件重新登录后 dsh 自动跟随；未登录（文件缺失或无 `accessToken`）时插件不写路由，恢复登录后 5 秒内自动注册。
+- **升级到 v0.2.0**：覆盖 `vendor/dsh-cannbot-gateway/` 后需要重新同步依赖——`file:` 依赖是安装时快照拷贝，重新执行一次 `pnpm install --no-frozen-lockfile`（或把 `node_modules/dsh-cannbot-gateway` 手动替换为指向 `vendor/` 的目录联接），再重启 dsh-desktop。
+- **JWT 有效期 24 小时**，由 cannbot 登录态决定。插件每 5 秒轮询登录态文件，你在 cannbot VS Code 插件重新登录后 dsh 自动跟随；未登录（文件缺失或无 `accessToken`）时插件不写路由，恢复登录后 5 秒内自动注册。
 - **不要在 settings.yaml 里手工维护 `cannbot:` 段**：路由由插件全权管理，手工段会在插件写入时被覆盖，且其 JWT 过期后会造成难排查的 401。`settings.yaml` 的 `cannbot-gateway:` 段属于插件设置命名空间，由前端卡片维护，同样不要手改。
 - **旧模型已下线**：cannbot 官方 OpenCode 插件示例中的 `deepseek-v3`、`deepseek-r1` 已不可用（网关返回 403 `Model not allowed`），请以 models/list API 的结果为准。
 - **网页版访问**需要 `settings.yaml` 中 `dsh-desktop.mode: compatibility` 且 `openBrowser: true`；`networkExposure: loopback` 时仅本机浏览器可访问，改为 `lan` 意味着局域网内任何人都能操作你的电脑，请谨慎。
@@ -185,10 +185,10 @@ Authorization: Bearer <session.json 里的 accessToken>
 
 ## 兼容性
 
-- dsh-desktop v2.0.3（`@deepseek-ai/dsh-llm-pi-ai` 基于 `@earendil-works/pi-ai` 的 openai-completions 协议）上开发验证
-- dsh-desktop（Electron 窗口）与 dsh 网页版（浏览器访问本机 webserver）同时验证通过
-- 前端卡片在 v0.2.0 于「设置 → 插件 → 插件配置」实测验证：密钥写入凭据库、配置热生效、对话往返均通过
-- Windows 10/11；理论兼容 macOS/Linux（未验证，`sessionFile` 路径支持 `~` 展开）
+- **DeepSeek Harness `0.2.0-rc.2`**（Electron 44 构建，cordis 4 + 组合层配置直编）：v0.3.2 按该版插件 API 适配——`apply(ctx, config)` 导出形式、`@deepseek-ai/schemastery` 的 `.volatile()` 活字段、路由经 `settings.update("llm-pi-ai", { providers })` 写入组合、卡片编辑走 `settings/document-updated` 事件、浏览器半侧 `configForms` 作用域 + `plugins.item` slot + `remote.credentials`、不再依赖已移除的 `dsh-client-runtime`。**已在运行中的 Harness 0.2.0-rc.2 实测通过**：路由注册、模型选择器 Cannbot 分组、卡片热编辑、cannbot 模型对话往返均验证可用。
+- dsh-desktop 2.0.3（`@deepseek-ai/dsh-llm-pi-ai` 基于 `@earendil-works/pi-ai` 的 openai-completions 协议）：v0.2.x 在该版开发验证；v0.2.x 不兼容 0.2.0-rc.x（设置页 slot 与凭据 API 已变更）。
+- dsh 桌面端（Electron 窗口）与 dsh 网页版（浏览器访问本机 webserver）同时验证通过（v0.2.x 时代）。
+- Windows 10/11；理论兼容 macOS/Linux（未验证，`sessionFile` 路径支持 `~` 展开）。
 
 ## 接入 ZCode
 

@@ -2,7 +2,7 @@
 
 把 cannbot 的 OpenAI 兼容网关注册为 dsh 的 `llm-pi-ai` provider 路由。完整安装步骤、配置参考与注意事项见仓库根目录 [README](../README.md)。
 
-**v0.3.0 适配 DeepSeek Harness `0.2.0-rc.x`**(新版「插件」页面与 configForms/`plugins.item` API,Electron 44 构建);v0.2.x 面向旧版 dsh-desktop 2.0.3,两者 API 不兼容,请按所装版本选择。
+**v0.3.2 适配 DeepSeek Harness `0.2.0-rc.x`**(新版「插件」页面与 configForms/`plugins.item` API,Electron 44 构建);v0.2.x 面向旧版 dsh-desktop 2.0.3,两者 API 不兼容,请按所装版本选择。
 
 ## 修改虚拟密钥（推荐：前端可视化）
 
@@ -44,7 +44,8 @@
 
 ## 行为
 
-- 通过 `ctx.settings` 写入 `llm-pi-ai` 命名空间的 `providers.<route>` 键，由 dsh 校验并由适配器热加载；插件每次启动、以及配置/凭据/登录态任一变化时都会重写路由。桌面端与网页版同时生效。
+- 通过 `settings.update("llm-pi-ai", { providers })` 写入路由:0.2.0-rc.x 中 `llm-pi-ai` 的 `providers` 是 volatile 字段,写入会持久化到本 profile 的组合文件(cordis.patch.yml 的 `llm-pi-ai` 行,**含 JWT**)并热重载适配器,桌面端与网页版同时生效;插件每次启动、以及卡片配置/凭据/登录态任一变化时都会重写路由。
+- 卡片可改的 `displayName` / `gatewayURL` / `sessionFile` 在本插件 Config 里声明为 volatile:保存后由 settings 服务原地应用到条目配置(不重跑插件),插件监听 `settings/document-updated` 事件实时重写路由。
 - 前端保存的密钥经 credentials 域写入本机凭据库，绝不进入设置文档、绝不经前端回显（只显示「已配置/未配置」徽章）。
 - 插件禁用/卸载时自动注销该路由，不残留过期 JWT。
 - 帐号可用的模型列表可随时用 `GET /cannbot/api/models/list?page=1&size=100`（带 `Authorization: Bearer <session.json 的 JWT>`）查询。

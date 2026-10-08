@@ -1,32 +1,38 @@
 {
-  "name": "dsh-cannbot-gateway",
-  "version": "0.2.1",
-  "description": "Register the cannbot OpenAI-compatible gateway as an llm-pi-ai provider route: virtual key editable in the frontend 插件配置 card (stored in the credentials domain), Bearer JWT auto-refreshed from ~/.cannbot/session.json.",
-  "type": "module",
-  "main": "lib/index.js",
-  "exports": {
-    ".": {
-      "default": "./lib/index.js"
-    },
-    "./client": "./lib/client.js",
-    "./package.json": "./package.json"
-  },
-  "files": [
-    "lib/index.js",
-    "lib/client.js",
-    "cordis.patch.yml",
-    "README.md"
-  ],
-  "dsh": {
-    "bundle": {
-      "patch": "./cordis.patch.yml"
-    },
-    "client": {
-      "inject": [
-        "@deepseek-ai/dsh-client-runtime"
-      ],
-      "platform": "web"
-    }
-  },
-  "license": "MIT"
+	"name": "dsh-cannbot-gateway",
+	"version": "0.3.2",
+	"description": "Register the cannbot OpenAI-compatible gateway as an llm-pi-ai provider route on dsh 0.2.0-rc.x: virtual key editable in the Plugins page card (stored in the credentials domain), Bearer JWT auto-refreshed from the cannbot session file.",
+	"type": "module",
+	"main": "lib/index.js",
+	"exports": {
+		".": "./lib/index.js",
+		"./client": "./lib/client.js",
+		"./package.json": "./package.json",
+		"./locale/*.json": "./locale/*.json"
+	},
+	"files": [
+		"lib/index.js",
+		"lib/client.js",
+		"cordis.patch.yml",
+		"locale/*.json",
+		"README.md"
+	],
+	"dependencies": {
+		"schemastery": "^3.18.0"
+	},
+	"dsh": {
+		"bundle": {
+			"patch": "./cordis.patch.yml"
+		},
+		"client": {
+			"platform": "web",
+			"inject": [
+				"@deepseek-ai/dsh-client-locale",
+				"@deepseek-ai/dsh-client-ui-settings",
+				"@deepseek-ai/dsh-client-ui-plugin-manager",
+				"@deepseek-ai/dsh-api-remotes"
+			]
+		}
+	},
+	"license": "MIT"
 }
