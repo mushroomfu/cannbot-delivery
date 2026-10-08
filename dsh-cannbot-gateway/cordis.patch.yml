@@ -2,3 +2,4 @@
 - insert:
     - id: cannbot-gateway
       name: dsh-cannbot-gateway
+      config: {}

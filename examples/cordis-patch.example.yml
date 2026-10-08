@@ -1,9 +1,10 @@
 # 在 ~/.dsh/profiles/desktop/cordis.patch.yml 中追加本段。
-# 虚拟密钥推荐装完后在前端「设置 → 插件 → 插件配置 → Cannbot 网关」卡片里填写
+# 虚拟密钥推荐装完后在前端「插件 → Cannbot 网关」卡片里填写
 # （保存进本机凭据库，热生效）；若想走文件配置，取消 xApiKey 一行的注释并填入 vk-...。
 
-# dsh-cannbot-gateway：cannbot 网关路由（JWT 自动从 ~/.cannbot/session.json
-# 轮询刷新并写入 llm-pi-ai 的 providers.cannbot）
+# dsh-cannbot-gateway：cannbot 网关路由（JWT 自动从 cannbot 登录态文件
+# 轮询刷新并写入 llm-pi-ai 的 providers.cannbot；sessionFile 留默认即
+# 依次探测 ~/.local/share/opencode/session.json 与 ~/.cannbot/session.json）
 - id: cannbot-gateway
   config:
     enabled: true
@@ -11,7 +12,7 @@
     displayName: Cannbot
     # xApiKey: vk-xxxxxxxx        # 可选：文件侧兜底密钥；推荐用前端卡片填写
     gatewayURL: https://cannbot.hicann.cn/gateway/compatible-mode/v1
-    sessionFile: ~/.cannbot/session.json
+    # sessionFile: ~/.local/share/opencode/session.json   # 可选：默认自动探测新/旧位置
     pluginType: OpenCodeGUI
     models:
       - id: deepseek-v4-flash

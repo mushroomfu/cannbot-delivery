@@ -1,0 +1,6 @@
+{
+	"meta": {
+		"title": "Cannbot Gateway",
+		"description": "Adds the cannbot OpenAI-compatible gateway as an llm-pi-ai model provider route."
+	}
+}

@@ -3,12 +3,10 @@ window.__ModuleLoader__.load({
 	factory: (require) => {
 		var module = { exports: {} };
 		var exports = module.exports;
-		Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 		let react_jsx_runtime = require("react/jsx-runtime");
 		let react = require("react");
-		let _deepseek_ai_dsh_client_runtime_client = require("@deepseek-ai/dsh-client-runtime/client");
 		//#region lib/types/client/styles.js
-		const css = ".cbgw-card{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);border-radius:10px;padding:0;display:flex;flex-direction:column}.cbgw-header{display:flex;align-items:center;gap:8px;width:100%;background:0;border:0;cursor:pointer;font:inherit;text-align:left;padding:12px 14px;color:var(--dsw-alias-label-primary)}.cbgw-headText{display:flex;flex-direction:column;min-width:0;flex:1}.cbgw-name{font-size:13px;font-weight:600;line-height:1.5}.cbgw-description{font-size:12px;color:var(--dsw-alias-label-tertiary);line-height:1.5}.cbgw-pending{white-space:nowrap;background:var(--dsw-alias-bg-module-platform);color:var(--dsw-alias-label-secondary);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:500;line-height:17px}.cbgw-chevron{margin-left:auto;color:var(--dsw-alias-label-tertiary);transition:transform .15s ease}.cbgw-chevronOpen{transform:rotate(180deg)}.cbgw-body{display:flex;flex-direction:column;gap:4px;padding:2px 14px 12px;border-top:1px solid var(--dsw-alias-border-l2)}.cbgw-readOnly{color:var(--dsw-alias-label-tertiary);margin:8px 0 0;font-size:12px}.cbgw-field{display:flex;flex-direction:column;gap:6px;padding:12px 0}.cbgw-field+.cbgw-field{border-top:1px solid var(--dsw-alias-border-l2)}.cbgw-head{display:flex;align-items:center;gap:8px}.cbgw-label{min-width:0;color:var(--dsw-alias-label-primary);flex:1;font-size:13px;font-weight:500;line-height:1.5}.cbgw-badges{display:inline-flex;align-items:center;gap:8px}.cbgw-badge{white-space:nowrap;background:var(--dsw-alias-bg-module-platform);color:var(--dsw-alias-label-secondary);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:500;line-height:17px}.cbgw-badgeMuted{white-space:nowrap;color:var(--dsw-alias-label-tertiary);border-radius:999px;padding:1px 8px;font-size:11px;line-height:17px}.cbgw-reset{font:inherit;color:var(--dsw-alias-label-secondary);cursor:pointer;background:0;border:none;padding:0;font-size:12px;line-height:1.5}.cbgw-reset:hover:not(:disabled){color:var(--dsw-alias-label-primary)}.cbgw-reset:disabled{cursor:default}.cbgw-input{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-3);height:34px;font:inherit;color:var(--dsw-alias-label-primary);border-radius:8px;padding:0 12px;font-size:13px;line-height:1.5}.cbgw-input:focus-visible{border-color:var(--dsw-alias-brand-primary);outline:none}.cbgw-hint{color:var(--dsw-alias-label-tertiary);margin:0;font-size:12px;line-height:1.5}.cbgw-footer{display:flex;justify-content:flex-end;align-items:center;gap:8px;padding-top:10px}.cbgw-failed{color:var(--dsw-alias-label-error);margin:0 auto 0 0;font-size:12px}.cbgw-button{font:inherit;font-size:12px;cursor:pointer;border-radius:8px;padding:5px 12px;border:1px solid var(--dsw-alias-border-l2);background:0;color:var(--dsw-alias-label-secondary)}.cbgw-button:hover:not(:disabled){color:var(--dsw-alias-label-primary)}.cbgw-button:disabled{cursor:default;opacity:.5}.cbgw-primary{background:var(--dsw-alias-brand-primary);border-color:var(--dsw-alias-brand-primary);color:var(--dsw-alias-label-on-brand, #fff)}.cbgw-primary:hover:not(:disabled){color:var(--dsw-alias-label-on-brand, #fff);filter:brightness(1.05)}";
+		const css = ".cbgw-card{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);border-radius:10px;padding:0 14px 12px;display:flex;flex-direction:column}.cbgw-readOnly{color:var(--dsw-alias-label-tertiary);margin:10px 0 0;font-size:12px}.cbgw-field{display:flex;flex-direction:column;gap:6px;padding:12px 0}.cbgw-field+.cbgw-field{border-top:1px solid var(--dsw-alias-border-l2)}.cbgw-head{display:flex;align-items:center;gap:8px}.cbgw-label{min-width:0;color:var(--dsw-alias-label-primary);flex:1;font-size:13px;font-weight:500;line-height:1.5}.cbgw-badges{display:inline-flex;align-items:center;gap:8px}.cbgw-badge{white-space:nowrap;background:var(--dsw-alias-bg-module-platform);color:var(--dsw-alias-label-secondary);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:500;line-height:17px}.cbgw-badgeMuted{white-space:nowrap;color:var(--dsw-alias-label-tertiary);border-radius:999px;padding:1px 8px;font-size:11px;line-height:17px}.cbgw-reset{font:inherit;color:var(--dsw-alias-label-secondary);cursor:pointer;background:0;border:none;padding:0;font-size:12px;line-height:1.5}.cbgw-reset:hover:not(:disabled){color:var(--dsw-alias-label-primary)}.cbgw-reset:disabled{cursor:default}.cbgw-input{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-3);height:34px;font:inherit;color:var(--dsw-alias-label-primary);border-radius:8px;padding:0 12px;font-size:13px;line-height:1.5}.cbgw-input:focus-visible{border-color:var(--dsw-alias-brand-primary);outline:none}.cbgw-hint{color:var(--dsw-alias-label-tertiary);margin:0;font-size:12px;line-height:1.5}.cbgw-invalid{color:var(--dsw-alias-label-error);margin:0;font-size:12px;line-height:1.5}.cbgw-footer{display:flex;justify-content:flex-end;align-items:center;gap:8px;padding-top:10px}.cbgw-pending{white-space:nowrap;background:var(--dsw-alias-bg-module-platform);color:var(--dsw-alias-label-secondary);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:500;line-height:17px;margin-right:auto}.cbgw-failed{color:var(--dsw-alias-label-error);margin:0 auto 0 0;font-size:12px}.cbgw-button{font:inherit;font-size:12px;cursor:pointer;border-radius:8px;padding:5px 12px;border:1px solid var(--dsw-alias-border-l2);background:0;color:var(--dsw-alias-label-secondary)}.cbgw-button:hover:not(:disabled){color:var(--dsw-alias-label-primary)}.cbgw-button:disabled{cursor:default;opacity:.5}.cbgw-primary{background:var(--dsw-alias-brand-primary);border-color:var(--dsw-alias-brand-primary);color:var(--dsw-alias-label-on-brand, #fff)}.cbgw-primary:hover:not(:disabled){color:var(--dsw-alias-label-on-brand, #fff);filter:brightness(1.05)}";
 		const tagId = "dsh-cannbot-gateway/card.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId) + "]") === null) {
 			const tag = document.createElement("style");
@@ -23,14 +21,14 @@ window.__ModuleLoader__.load({
 		const zh = {
 			cardTitle: "Cannbot 网关",
 			cardDescription: "cannbot 虚拟密钥与网关连接（模型列表在 cordis.patch.yml 维护）",
-			expand: "展开设置",
-			collapse: "收起设置",
-			unsaved: "未保存",
+			unavailable: "该插件当前未加载，暂时无法配置。",
 			readOnly: "本部署的设置为只读。",
+			unsaved: "未保存",
 			save: "保存",
 			saving: "保存中…",
 			discard: "放弃修改",
 			saveFailed: "本部署没有接受这些值，已保留供你修改。",
+			invalid: "输入无效，请修正后再保存。",
 			overridden: "已覆盖",
 			reset: "恢复默认",
 			vkLabel: "虚拟密钥（x-api-vkey）",
@@ -42,19 +40,19 @@ window.__ModuleLoader__.load({
 			gatewayURLLabel: "网关地址",
 			gatewayURLHint: "OpenAI 兼容网关地址。",
 			sessionFileLabel: "登录态文件",
-			sessionFileHint: "cannbot 的 session.json 路径，JWT 自动从这里轮询刷新。"
+			sessionFileHint: "cannbot 的 session.json 路径，留默认自动探测新/旧位置。"
 		};
 		const en = {
 			cardTitle: "Cannbot Gateway",
 			cardDescription: "cannbot virtual key and gateway connection (model list lives in cordis.patch.yml)",
-			expand: "Show settings",
-			collapse: "Hide settings",
-			unsaved: "Unsaved",
+			unavailable: "This plugin is not loaded, so it cannot be configured right now.",
 			readOnly: "This deployment stores settings read-only.",
+			unsaved: "Unsaved",
 			save: "Save",
 			saving: "Saving…",
 			discard: "Discard",
 			saveFailed: "The deployment did not accept these values; they were left for you to correct.",
+			invalid: "Enter a valid value before saving.",
 			overridden: "Overridden",
 			reset: "Reset to default",
 			vkLabel: "Virtual key (x-api-vkey)",
@@ -66,8 +64,29 @@ window.__ModuleLoader__.load({
 			gatewayURLLabel: "Gateway URL",
 			gatewayURLHint: "OpenAI-compatible gateway endpoint.",
 			sessionFileLabel: "Session file",
-			sessionFileHint: "Path of cannbot's session.json; the JWT is polled from here."
+			sessionFileHint: "Path of cannbot's session.json; new and legacy locations are probed by default."
 		};
+		//#endregion
+		//#region lib/types/client/store.js
+		/** Minimal snapshot store; the deployment's client-store package is first-party only. */
+		function createSnapshotStore(initial) {
+			let snapshot = initial;
+			const listeners = new Set();
+			return {
+				getSnapshot: () => snapshot,
+				set(next) {
+					if (Object.is(next, snapshot)) return;
+					snapshot = next;
+					for (const listener of [...listeners]) listener();
+				},
+				subscribe(listener) {
+					listeners.add(listener);
+					return () => {
+						listeners.delete(listener);
+					};
+				}
+			};
+		}
 		//#endregion
 		//#region lib/types/client/fields.js
 		function ValueField(props) {
@@ -87,6 +106,7 @@ window.__ModuleLoader__.load({
 					disabled: props.disabled,
 					onChange: (event) => { props.onEdit(event.target.value); }
 				}),
+				props.invalid ? (0, react_jsx_runtime.jsx)("p", { className: "cbgw-invalid", children: props.invalidLabel }) : null,
 				(0, react_jsx_runtime.jsx)("p", { className: "cbgw-hint", children: props.hint })
 			] });
 		}
@@ -112,98 +132,6 @@ window.__ModuleLoader__.load({
 			] });
 		}
 		//#endregion
-		//#region lib/types/client/card.js
-		function Card(props) {
-			const [open, setOpen] = (0, react.useState)(false);
-			const { state } = props;
-			if (!state.available) return null;
-			const title = props.t(props.titleKey);
-			const blocked = !state.dirty || state.invalid || state.saving;
-			return (0, react_jsx_runtime.jsxs)("li", { className: "cbgw-card", children: [
-				(0, react_jsx_runtime.jsxs)("button", {
-					type: "button",
-					className: "cbgw-header",
-					"aria-expanded": open,
-					onClick: () => { setOpen(!open); },
-					children: [
-						(0, react_jsx_runtime.jsxs)("span", { className: "cbgw-headText", children: [
-							(0, react_jsx_runtime.jsx)("span", { className: "cbgw-name", children: title }),
-							(0, react_jsx_runtime.jsx)("span", { className: "cbgw-description", children: props.t(props.descriptionKey) })
-						] }),
-						state.dirty ? (0, react_jsx_runtime.jsx)("span", { className: "cbgw-pending", children: props.t("unsaved") }) : null,
-						(0, react_jsx_runtime.jsx)("span", { className: "cbgw-chevron" + (open ? " cbgw-chevronOpen" : ""), children: "▾" })
-					]
-				}),
-				open ? (0, react_jsx_runtime.jsxs)("div", { className: "cbgw-body", children: [
-					!state.writable ? (0, react_jsx_runtime.jsx)("p", { className: "cbgw-readOnly", role: "status", children: props.t("readOnly") }) : null,
-					props.children,
-					(0, react_jsx_runtime.jsxs)("div", { className: "cbgw-footer", children: [
-						state.failed ? (0, react_jsx_runtime.jsx)("p", { className: "cbgw-failed", role: "status", children: props.t("saveFailed") }) : null,
-						(0, react_jsx_runtime.jsx)("button", { type: "button", className: "cbgw-button", disabled: !state.dirty || state.saving, onClick: props.onDiscard, children: props.t("discard") }),
-						(0, react_jsx_runtime.jsx)("button", { type: "button", className: "cbgw-button cbgw-primary", disabled: blocked, onClick: props.onSave, children: props.t(state.saving ? "saving" : "save") })
-					] })
-				] }) : null
-			] });
-		}
-		function CannbotCard(props) {
-			const t = props.t;
-			const state = props.useCannbotCard((snapshot) => snapshot);
-			const disabled = !state.writable;
-			return (0, react_jsx_runtime.jsxs)(Card, {
-				t,
-				titleKey: "cardTitle",
-				descriptionKey: "cardDescription",
-				state,
-				onSave: props.save,
-				onDiscard: props.discard,
-				children: [
-					(0, react_jsx_runtime.jsx)(SecretField, {
-						id: "cannbot-gateway-vk",
-						label: t("vkLabel"),
-						hint: t("vkHint"),
-						disabled: !state.vkWritable,
-						text: state.vk.text,
-						configured: state.vkConfigured,
-						stateLabel: state.vkConfigured ? t("vkSet") : t("vkUnset"),
-						onEdit: (text) => { props.edit("vk", text); }
-					}),
-					(0, react_jsx_runtime.jsx)(ValueField, {
-						id: "cannbot-gateway-display-name",
-						label: t("displayNameLabel"),
-						hint: t("displayNameHint"),
-						overriddenLabel: t("overridden"),
-						resetLabel: t("reset"),
-						disabled,
-						...state.displayName,
-						onEdit: (text) => { props.edit("displayName", text); },
-						onReset: () => { props.resetField("displayName"); }
-					}),
-					(0, react_jsx_runtime.jsx)(ValueField, {
-						id: "cannbot-gateway-gateway-url",
-						label: t("gatewayURLLabel"),
-						hint: t("gatewayURLHint"),
-						overriddenLabel: t("overridden"),
-						resetLabel: t("reset"),
-						disabled,
-						...state.gatewayURL,
-						onEdit: (text) => { props.edit("gatewayURL", text); },
-						onReset: () => { props.resetField("gatewayURL"); }
-					}),
-					(0, react_jsx_runtime.jsx)(ValueField, {
-						id: "cannbot-gateway-session-file",
-						label: t("sessionFileLabel"),
-						hint: t("sessionFileHint"),
-						overriddenLabel: t("overridden"),
-						resetLabel: t("reset"),
-						disabled,
-						...state.sessionFile,
-						onEdit: (text) => { props.edit("sessionFile", text); },
-						onReset: () => { props.resetField("sessionFile"); }
-					})
-				]
-			});
-		}
-		//#endregion
 		//#region lib/types/client/form.js
 		function textField(field) {
 			return {
@@ -224,14 +152,19 @@ window.__ModuleLoader__.load({
 			listeners = new Set();
 			saving = false;
 			failed = false;
+			unsubscribe;
 			constructor(scope, specs, secrets = []) {
 				this.scope = scope;
 				this.specs = new Map(specs.map((spec) => [spec.field, spec]));
 				this.secretSpecs = new Map(secrets.map((spec) => [spec.field, spec]));
-				scope.subscribe(() => { this.publish(); });
+				this.unsubscribe = scope.subscribe(() => { this.publish(); });
+			}
+			dispose() {
+				this.unsubscribe?.();
+				this.listeners.clear();
 			}
 			bind(project) {
-				const store = (0, _deepseek_ai_dsh_client_runtime_client.createSnapshotStore)(project());
+				const store = createSnapshotStore(project());
 				this.listeners.add(() => { store.set(project()); });
 				return store;
 			}
@@ -345,6 +278,83 @@ window.__ModuleLoader__.load({
 			}
 		};
 		//#endregion
+		//#region lib/types/client/card.js
+		function Card(props) {
+			const state = props.state;
+			if (!state.available) return (0, react_jsx_runtime.jsx)("div", { className: "cbgw-card", children: (0, react_jsx_runtime.jsx)("p", { className: "cbgw-readOnly", role: "status", children: props.t("unavailable") }) });
+			const blocked = !state.dirty || state.invalid || state.saving;
+			return (0, react_jsx_runtime.jsxs)("div", { className: "cbgw-card", children: [
+				!state.writable ? (0, react_jsx_runtime.jsx)("p", { className: "cbgw-readOnly", role: "status", children: props.t("readOnly") }) : null,
+				props.children,
+				(0, react_jsx_runtime.jsxs)("div", { className: "cbgw-footer", children: [
+					state.dirty ? (0, react_jsx_runtime.jsx)("span", { className: "cbgw-pending", children: props.t("unsaved") }) : null,
+					state.failed ? (0, react_jsx_runtime.jsx)("p", { className: "cbgw-failed", role: "status", children: props.t("saveFailed") }) : null,
+					(0, react_jsx_runtime.jsx)("button", { type: "button", className: "cbgw-button", disabled: !state.dirty || state.saving, onClick: props.onDiscard, children: props.t("discard") }),
+					(0, react_jsx_runtime.jsx)("button", { type: "button", className: "cbgw-button cbgw-primary", disabled: blocked, onClick: props.onSave, children: props.t(state.saving ? "saving" : "save") })
+				] })
+			] });
+		}
+		function CannbotCard(props) {
+			const t = props.t;
+			const state = props.useCannbotCard((snapshot) => snapshot);
+			if (props.view === "summary") return t("cardDescription");
+			const disabled = !state.writable;
+			return (0, react_jsx_runtime.jsx)(Card, {
+				t,
+				state,
+				onSave: props.save,
+				onDiscard: props.discard,
+				children: [
+					(0, react_jsx_runtime.jsx)(SecretField, {
+						id: "cannbot-gateway-vk",
+						label: t("vkLabel"),
+						hint: t("vkHint"),
+						disabled: !state.vkWritable,
+						text: state.vk.text,
+						configured: state.vkConfigured,
+						stateLabel: state.vkConfigured ? t("vkSet") : t("vkUnset"),
+						onEdit: (text) => { props.edit("vk", text); }
+					}),
+					(0, react_jsx_runtime.jsx)(ValueField, {
+						id: "cannbot-gateway-display-name",
+						label: t("displayNameLabel"),
+						hint: t("displayNameHint"),
+						overriddenLabel: t("overridden"),
+						resetLabel: t("reset"),
+						invalidLabel: t("invalid"),
+						disabled,
+						...state.displayName,
+						onEdit: (text) => { props.edit("displayName", text); },
+						onReset: () => { props.resetField("displayName"); }
+					}),
+					(0, react_jsx_runtime.jsx)(ValueField, {
+						id: "cannbot-gateway-gateway-url",
+						label: t("gatewayURLLabel"),
+						hint: t("gatewayURLHint"),
+						overriddenLabel: t("overridden"),
+						resetLabel: t("reset"),
+						invalidLabel: t("invalid"),
+						disabled,
+						...state.gatewayURL,
+						onEdit: (text) => { props.edit("gatewayURL", text); },
+						onReset: () => { props.resetField("gatewayURL"); }
+					}),
+					(0, react_jsx_runtime.jsx)(ValueField, {
+						id: "cannbot-gateway-session-file",
+						label: t("sessionFileLabel"),
+						hint: t("sessionFileHint"),
+						overriddenLabel: t("overridden"),
+						resetLabel: t("reset"),
+						invalidLabel: t("invalid"),
+						disabled,
+						...state.sessionFile,
+						onEdit: (text) => { props.edit("sessionFile", text); },
+						onReset: () => { props.resetField("sessionFile"); }
+					})
+				]
+			});
+		}
+		//#endregion
 		//#region lib/types/client/controller.js
 		const NS = "cannbot-gateway";
 		const DEFAULT_VK_REF = "CANNBOT_VK";
@@ -355,19 +365,20 @@ window.__ModuleLoader__.load({
 		}
 		var CannbotCardController = class {
 			scope;
-			api;
+			ctx;
 			form;
 			store;
+			unsubscribe;
 			credential = { ref: "", configured: false, writable: true };
-			constructor(scope, api) {
+			constructor(scope, ctx) {
 				this.scope = scope;
-				this.api = api;
+				this.ctx = ctx;
 				this.form = new CardForm(scope, [textField("displayName"), textField("gatewayURL"), textField("sessionFile")], [{
 					field: VK_FIELD,
 					write: (text) => this.writeKey(text)
 				}]);
 				this.store = this.form.bind(() => this.projection());
-				scope.subscribe(() => { this.readCredential(); });
+				this.unsubscribe = scope.subscribe(() => { this.readCredential(); });
 				this.readCredential();
 			}
 			projection() {
@@ -389,12 +400,12 @@ window.__ModuleLoader__.load({
 				}
 				let response;
 				try {
-					response = await this.api.credentials.describe({ refs: [ref] });
+					response = await this.ctx.remote.credentials.describe([ref]);
 				} catch (_credentialReadFailure) {
 					return;
 				}
-				if (!response.result.ok || ref !== refOf(this.scope.getSnapshot())) return;
-				const view = response.result.value.credentials[ref];
+				if (!response?.ok || ref !== refOf(this.scope.getSnapshot())) return;
+				const view = response.value?.[ref];
 				const next = {
 					ref,
 					configured: view?.configured ?? false,
@@ -416,35 +427,41 @@ window.__ModuleLoader__.load({
 			}
 			async writeKey(value) {
 				try {
-					await this.api.credentials.set({ ref: refOf(this.scope.getSnapshot()), value });
+					await this.ctx.remote.credentials.set(refOf(this.scope.getSnapshot()), value);
 				} catch (_credentialWriteFailure) {}
 				await this.readCredential();
 				return this.credential.configured;
+			}
+			dispose() {
+				this.unsubscribe?.();
+				this.form.dispose();
 			}
 		};
 		//#endregion
 		//#region lib/types/client/index.js
 		/** 必需的浏览器服务（cordis fiber inject）。 */
-		const inject = ["slots", "locale", "connection", "remote", "settingsScope"];
+		const inject = ["slots", "locale", "remote", "remote.credentials", "configForms"];
 		function apply(ctx) {
-			const { api } = ctx.get("connection");
 			const t = ctx.locale.bind(NS_LOCALE);
 			ctx.effect(() => ctx.locale.register(NS_LOCALE, { zh, en }), "cannbot-gateway: card dictionaries");
-			const controller = new CannbotCardController(ctx.settingsScope.bind({ namespace: NS }), api);
+			const controller = new CannbotCardController(ctx.configForms.get(NS), ctx);
+			ctx.effect(() => () => {
+				controller.dispose();
+			}, "cannbot-gateway: form subscription");
 			ctx.effect(() => ctx.remote.$on("credentials/reference-updated", (ref) => {
 				controller.refreshCredential(ref);
 			}), "cannbot-gateway: credential invalidations");
-			ctx.slots.inject("settings.plugin.item", function* () {
-				yield ctx.slots.register({
-					name: "settings.plugin.item",
-					key: NS,
-					locale: NS_LOCALE,
-					inject: () => controller.inject()
-				}, CannbotCard);
-			});
+			ctx.effect(() => ctx.configForms.whileServed([NS], () => ctx.slots.inject("plugins.item", () => ctx.slots.register({
+				name: "plugins.item",
+				id: "cannbot-gateway",
+				order: 50,
+				label: () => t("cardTitle"),
+				locale: NS_LOCALE,
+				inject: () => controller.inject()
+			}, CannbotCard))), "cannbot-gateway: card slot");
 		}
-		exports.apply = apply;
 		exports.inject = inject;
+		exports.apply = apply;
 		return module.exports;
 	}
 });

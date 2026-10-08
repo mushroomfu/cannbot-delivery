@@ -1,0 +1,6 @@
+{
+	"meta": {
+		"title": "Cannbot 网关",
+		"description": "把 cannbot 的 OpenAI 兼容网关注册为 llm-pi-ai 模型路由。"
+	}
+}

@@ -3,29 +3,36 @@
  * (https://cannbot.hicann.cn/gateway/compatible-mode/v1) as an `llm-pi-ai`
  * provider route.
  *
+ * Adapted for the DeepSeek Harness 0.2.0-rc.x composition (cordis 4 +
+ * `@deepseek-ai/dsh-settings`): `apply(ctx, config)` export form, settings
+ * namespace registration through `ctx.settings`, and the `credentials`
+ * service for the virtual key.
+ *
  * Auth mirrors the cannbot OpenCode plugin: the gateway requires BOTH
  *   - `x-api-vkey: <virtual key>`    → credential ref (default CANNBOT_VK),
- *                                      editable in the 插件配置 frontend card;
+ *                                      editable in the Plugins page card;
  *                                      falls back to the loader-row `xApiKey`
- *   - `Authorization: Bearer <JWT>`  → read from ~/.cannbot/session.json
+ *   - `Authorization: Bearer <JWT>`  → read from the cannbot session file
+ *                                      (new cannbot-toolkit ≥2.0 location
+ *                                      first, 1.x fallback second)
  *
  * Configuration is a settings namespace (`cannbot-gateway`) whose composition
- * base is the loader-row `config:` block; the frontend 插件配置 card writes the
+ * base is the loader-row `config:` block; the Plugins page card writes the
  * user layer, and the virtual key itself is written through the credentials
  * domain so it never rides a settings document. The session file is polled,
  * so a fresh login in the cannbot VS Code extension propagates into dsh
  * without touching anything.
  *
  * The route is written through the settings service (`llm-pi-ai` namespace),
- * which validates and persists it into settings.yaml and hot-reloads the
- * adapter. Desktop window and browser web UI share the same host, so both
- * pick the route up identically.
+ * which validates it against the adapter schema and hot-reloads it. The
+ * plugin re-writes the route on every boot and on every change, so the route
+ * does not depend on the user layer persisting across restarts.
  */
 
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import Schema from "schemastery";
+import Schema from "@deepseek-ai/schemastery";
 
 const NAMESPACE = "llm-pi-ai";
 const NAME = "cannbot-gateway";
@@ -42,7 +49,7 @@ const DEFAULT_MODELS = [
 	{ id: "deepseek-v4-pro", name: "DeepSeek-V4-Pro", contextWindow: 1048576, maxTokens: 393216 },
 ];
 
-/** The settings namespace the frontend 插件配置 card edits. */
+/** The settings namespace the Plugins page card edits. */
 export const Config = Schema.object({
 	enabled: Schema.boolean().default(true).description("启用 cannbot 路由"),
 	route: Schema.string().default("cannbot").description("llm-pi-ai 中的路由键名"),
@@ -63,7 +70,6 @@ export const Config = Schema.object({
 	).default(DEFAULT_MODELS).description("模型列表"),
 });
 
-const name = NS;
 const inject = ["settings", "credentials"];
 
 function nonEmpty(value) {
@@ -251,4 +257,4 @@ function apply(ctx, entry) {
 	});
 }
 
-export { apply, inject, name };
+export { apply, inject };
