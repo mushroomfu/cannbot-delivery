@@ -70,7 +70,7 @@ export const Config = Schema.object({
 			contextWindow: Schema.number().default(1048576),
 			maxTokens: Schema.number().default(393216),
 		}),
-	).default(DEFAULT_MODELS).description("模型列表"),
+	).default(DEFAULT_MODELS).volatile().description("模型列表（卡片可编辑，保存即热生效）"),
 });
 
 const inject = ["settings", "credentials"];
@@ -121,7 +121,23 @@ function readAccessToken(sessionFile) {
 	}
 }
 
-function buildProfile(value, vk, token) {
+/** 规范化模型列表:补默认值、修类型、丢掉无 id 项。仲裁与路由写入共用,保证比较稳定。 */
+function normalizeModels(models) {
+	return (Array.isArray(models) && models.length > 0 ? models : DEFAULT_MODELS)
+		.map((model) => ({
+			id: String(model?.id ?? "").trim(),
+			name: nonEmpty(model?.name) ? model.name.trim() : String(model?.id ?? "").trim(),
+			contextWindow: Number.isFinite(model?.contextWindow) && model.contextWindow > 0
+				? Math.floor(model.contextWindow)
+				: 1048576,
+			maxTokens: Number.isFinite(model?.maxTokens) && model.maxTokens > 0
+				? Math.floor(model.maxTokens)
+				: 393216,
+		}))
+		.filter((model) => model.id.length > 0);
+}
+
+function buildProfile(value, vk, token, models) {
 	const headers = { plugin_type: nonEmpty(value.pluginType) ? value.pluginType.trim() : "OpenCodeGUI" };
 	if (vk) headers["x-api-vkey"] = vk;
 	if (token) headers.Authorization = `Bearer ${token}`;
@@ -133,18 +149,7 @@ function buildProfile(value, vk, token) {
 		compat: { supportsDeveloperRole: false, maxTokensField: "max_tokens" },
 		timeoutMs: 120000,
 		streamIdleTimeoutMs: 300000,
-		models: (Array.isArray(value.models) && value.models.length > 0 ? value.models : DEFAULT_MODELS)
-			.map((model) => ({
-				id: String(model?.id ?? "").trim(),
-				name: nonEmpty(model?.name) ? model.name.trim() : String(model?.id ?? "").trim(),
-				contextWindow: Number.isFinite(model?.contextWindow) && model.contextWindow > 0
-					? Math.floor(model.contextWindow)
-					: 1048576,
-				maxTokens: Number.isFinite(model?.maxTokens) && model.maxTokens > 0
-					? Math.floor(model.maxTokens)
-					: 393216,
-			}))
-			.filter((model) => model.id.length > 0),
+		models: normalizeModels(models),
 	};
 }
 
@@ -159,6 +164,8 @@ function apply(ctx, entry) {
 
 		let stopping = false;
 		let lastSignature = "";
+		/** JSON of the model list the last successful route write carried. */
+		let lastModels = null;
 
 		/**
 		 * Volatile-field edits from the Plugins page card are applied to the fiber
@@ -173,6 +180,29 @@ function apply(ctx, entry) {
 				return row ? { ...config, ...row.value } : config;
 			} catch {
 				return config;
+			}
+		};
+
+		/** The model list the live llm-pi-ai route currently carries (Models-page edits land here). */
+		const readLiveModels = (route) => {
+			try {
+				const row = sctx.settings.describe().find((row) => row.ns === NAMESPACE);
+				const models = row?.value?.providers?.[route]?.models;
+				return Array.isArray(models) && models.length > 0 ? models : null;
+			} catch {
+				return null;
+			}
+		};
+
+		/** Persist an adopted model list back onto this entry, so the card and later restarts keep it. */
+		const persistModels = async (models) => {
+			for (let attempt = 0; attempt < 5; attempt++) {
+				try {
+					await sctx.settings.update(NAME, { models });
+					return;
+				} catch {
+					await new Promise((resolve) => setTimeout(resolve, 1000));
+				}
 			}
 		};
 
@@ -207,6 +237,7 @@ function apply(ctx, entry) {
 			const value = freshConfig();
 			if (value?.enabled === false) return;
 			const ref = vkRefOf(value);
+			const route = nonEmpty(value?.route) ? value.route.trim() : "cannbot";
 			let vk = await readCredential(ref);
 			if (vk === null && nonEmpty(value?.xApiKey)) vk = value.xApiKey.trim();
 			if (!vk) {
@@ -218,14 +249,30 @@ function apply(ctx, entry) {
 			const candidates = sessionCandidates(value);
 			const session = readSessionToken(candidates);
 			const token = session?.token ?? null;
-			const signature = JSON.stringify([vk, token, value?.route, value?.displayName, value?.gatewayURL, value?.pluginType, value?.models]);
-			if (signature === lastSignature) return;
 			if (!token) {
 				logger.warn("%s: 候选登录态文件均无 accessToken（%s），等待下次轮询", NAME, candidates.join(" / "));
 				return;
 			}
-			const route = nonEmpty(value?.route) ? value.route.trim() : "cannbot";
-			const profile = buildProfile(value, vk, token);
+
+			// 模型列表仲裁:哪一侧与上次写入不同,哪一侧就是较新的用户意图。
+			// 卡片/组合层编辑 → 用本条目值;模型选择页/其他途径改了 llm-pi-ai → 采纳并回写本条目,
+			// 两侧都没动则维持原值。任何一侧的手动模型配置都不再被回退。
+			let models = normalizeModels(value?.models);
+			if (JSON.stringify(models) !== lastModels) {
+				// 卡片或组合层的模型编辑尚未落到路由:本条目值胜出。
+			} else {
+				const liveModels = readLiveModels(route);
+				const normalizedLive = liveModels ? JSON.stringify(normalizeModels(liveModels)) : null;
+				if (normalizedLive !== null && normalizedLive !== lastModels) {
+					models = JSON.parse(normalizedLive);
+					void persistModels(models);
+					logger.info("%s: 已采纳 llm-pi-ai 侧的模型列表编辑(%d 个模型)", NAME, models.length);
+				}
+			}
+
+			const signature = JSON.stringify([vk, token, value?.route, value?.displayName, value?.gatewayURL, value?.pluginType, models]);
+			if (signature === lastSignature) return;
+			const profile = buildProfile(value, vk, token, models);
 			for (let attempt = 0; ; attempt++) {
 				if (stopping) return;
 				try {
@@ -243,6 +290,7 @@ function apply(ctx, entry) {
 				}
 			}
 			lastSignature = signature;
+			lastModels = JSON.stringify(profile.models);
 			logger.info("%s: 路由 %s 已就绪（模型 %s，密钥来源 %s，JWT 来自 %s）", NAME, route, profile.models.map((m) => m.id).join("/"), vk === value?.xApiKey?.trim() ? "组装层" : `凭据 ${ref}`, session?.file ?? "?");
 		};
 
@@ -261,7 +309,9 @@ function apply(ctx, entry) {
 			: undefined;
 		const offDocUpdated = typeof ctx.on === "function"
 			? ctx.on("settings/document-updated", (ns) => {
+				// 本条目:卡片编辑了活字段;llm-pi-ai:模型页或其他途径改了 providers(含模型列表)。
 				if (ns === NAME) void sync("config");
+				else if (ns === NAMESPACE) void sync("route");
 			})
 			: undefined;
 

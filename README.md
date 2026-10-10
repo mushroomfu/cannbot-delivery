@@ -2,7 +2,7 @@
 
 把 [cannbot](https://cannbot.hicann.cn)（CANN 网关）的 DeepSeek 等模型接入 **dsh-desktop**（DeepSeek Harness Desktop）。
 
-当前包含 **`dsh-cannbot-gateway`** —— 一个 dsh 桌面版 cordis 插件：把 cannbot 的 OpenAI 兼容网关注册为 `llm-pi-ai` 的 provider 路由，模型选择器中出现 **Cannbot** 分组，桌面端与网页版同时可用。**v0.3.2 适配新版 DeepSeek Harness `0.2.0-rc.x`；v0.2.x 面向旧版 dsh-desktop 2.0.3**（两代插件的设置页/凭据 API 不兼容，请按所装版本选择插件大版本）。
+当前包含 **`dsh-cannbot-gateway`** —— 一个 dsh 桌面版 cordis 插件：把 cannbot 的 OpenAI 兼容网关注册为 `llm-pi-ai` 的 provider 路由，模型选择器中出现 **Cannbot** 分组，桌面端与网页版同时可用。**v0.4.0 适配新版 DeepSeek Harness `0.2.0-rc.x`；v0.2.x 面向旧版 dsh-desktop 2.0.3**（两代插件的设置页/凭据 API 不兼容，请按所装版本选择插件大版本）。
 
 此外还包含 **[`zcode/`](zcode/)** —— 把同一 cannbot 网关接入智谱 **ZCode**（桌面端 + 终端 CLI）的配置脚本、`/vk` 斜杠命令与使用指南，DeepSeek V4 与 GLM 5.x 系列均实测可用。
 
@@ -31,7 +31,7 @@ plugin_type: OpenCodeGUI           ← 来源标识
 
 **前提**：
 
-- dsh 桌面版：**DeepSeek Harness `0.2.0-rc.x` 配 v0.3.2 插件；旧版 dsh-desktop 2.0.3 配 v0.2.x 插件**，且至少成功启动过一次（已生成 `~/.dsh/profiles/desktop/`）
+- dsh 桌面版：**DeepSeek Harness `0.2.0-rc.x` 配 v0.4.0 插件；旧版 dsh-desktop 2.0.3 配 v0.2.x 插件**，且至少成功启动过一次（已生成 `~/.dsh/profiles/desktop/`）
 - 网络可达 `cannbot.hicann.cn`
 - 已在 cannbot VS Code 插件中登录过（生成 `~/.cannbot/session.json`）
 - 拥有 cannbot 虚拟密钥 `vk-...`（若配置过 cannbot 的 OpenCode 插件，`~/.local/share/opencode/auth.json` 的 `cannbot.key` 就是它）
@@ -185,7 +185,7 @@ Authorization: Bearer <session.json 里的 accessToken>
 
 ## 兼容性
 
-- **DeepSeek Harness `0.2.0-rc.2`**（Electron 44 构建，cordis 4 + 组合层配置直编）：v0.3.2 按该版插件 API 适配——`apply(ctx, config)` 导出形式、`@deepseek-ai/schemastery` 的 `.volatile()` 活字段、路由经 `settings.update("llm-pi-ai", { providers })` 写入组合、卡片编辑走 `settings/document-updated` 事件、浏览器半侧 `configForms` 作用域 + `plugins.item` slot + `remote.credentials`、不再依赖已移除的 `dsh-client-runtime`。**已在运行中的 Harness 0.2.0-rc.2 实测通过**：路由注册、模型选择器 Cannbot 分组、卡片热编辑、cannbot 模型对话往返均验证可用。
+- **DeepSeek Harness `0.2.0-rc.2`**（Electron 44 构建，cordis 4 + 组合层配置直编）：v0.4.0 按该版插件 API 适配——`apply(ctx, config)` 导出形式、`@deepseek-ai/schemastery` 的 `.volatile()` 活字段、路由经 `settings.update("llm-pi-ai", { providers })` 写入组合、卡片编辑走 `settings/document-updated` 事件、浏览器半侧 `configForms` 作用域 + `plugins.item` slot + `remote.credentials`、不再依赖已移除的 `dsh-client-runtime`。**已在运行中的 Harness 0.2.0-rc.2 实测通过**：路由注册、模型选择器 Cannbot 分组、卡片热编辑、cannbot 模型对话往返均验证可用。
 - dsh-desktop 2.0.3（`@deepseek-ai/dsh-llm-pi-ai` 基于 `@earendil-works/pi-ai` 的 openai-completions 协议）：v0.2.x 在该版开发验证；v0.2.x 不兼容 0.2.0-rc.x（设置页 slot 与凭据 API 已变更）。
 - dsh 桌面端（Electron 窗口）与 dsh 网页版（浏览器访问本机 webserver）同时验证通过（v0.2.x 时代）。
 - Windows 10/11；理论兼容 macOS/Linux（未验证，`sessionFile` 路径支持 `~` 展开）。

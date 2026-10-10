@@ -6,7 +6,7 @@ window.__ModuleLoader__.load({
 		let react_jsx_runtime = require("react/jsx-runtime");
 		let react = require("react");
 		//#region lib/types/client/styles.js
-		const css = ".cbgw-card{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);border-radius:10px;padding:0 14px 12px;display:flex;flex-direction:column}.cbgw-readOnly{color:var(--dsw-alias-label-tertiary);margin:10px 0 0;font-size:12px}.cbgw-field{display:flex;flex-direction:column;gap:6px;padding:12px 0}.cbgw-field+.cbgw-field{border-top:1px solid var(--dsw-alias-border-l2)}.cbgw-head{display:flex;align-items:center;gap:8px}.cbgw-label{min-width:0;color:var(--dsw-alias-label-primary);flex:1;font-size:13px;font-weight:500;line-height:1.5}.cbgw-badges{display:inline-flex;align-items:center;gap:8px}.cbgw-badge{white-space:nowrap;background:var(--dsw-alias-bg-module-platform);color:var(--dsw-alias-label-secondary);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:500;line-height:17px}.cbgw-badgeMuted{white-space:nowrap;color:var(--dsw-alias-label-tertiary);border-radius:999px;padding:1px 8px;font-size:11px;line-height:17px}.cbgw-reset{font:inherit;color:var(--dsw-alias-label-secondary);cursor:pointer;background:0;border:none;padding:0;font-size:12px;line-height:1.5}.cbgw-reset:hover:not(:disabled){color:var(--dsw-alias-label-primary)}.cbgw-reset:disabled{cursor:default}.cbgw-input{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-3);height:34px;font:inherit;color:var(--dsw-alias-label-primary);border-radius:8px;padding:0 12px;font-size:13px;line-height:1.5}.cbgw-input:focus-visible{border-color:var(--dsw-alias-brand-primary);outline:none}.cbgw-hint{color:var(--dsw-alias-label-tertiary);margin:0;font-size:12px;line-height:1.5}.cbgw-invalid{color:var(--dsw-alias-label-error);margin:0;font-size:12px;line-height:1.5}.cbgw-footer{display:flex;justify-content:flex-end;align-items:center;gap:8px;padding-top:10px}.cbgw-pending{white-space:nowrap;background:var(--dsw-alias-bg-module-platform);color:var(--dsw-alias-label-secondary);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:500;line-height:17px;margin-right:auto}.cbgw-failed{color:var(--dsw-alias-label-error);margin:0 auto 0 0;font-size:12px}.cbgw-button{font:inherit;font-size:12px;cursor:pointer;border-radius:8px;padding:5px 12px;border:1px solid var(--dsw-alias-border-l2);background:0;color:var(--dsw-alias-label-secondary)}.cbgw-button:hover:not(:disabled){color:var(--dsw-alias-label-primary)}.cbgw-button:disabled{cursor:default;opacity:.5}.cbgw-primary{background:var(--dsw-alias-brand-primary);border-color:var(--dsw-alias-brand-primary);color:var(--dsw-alias-label-on-brand, #fff)}.cbgw-primary:hover:not(:disabled){color:var(--dsw-alias-label-on-brand, #fff);filter:brightness(1.05)}";
+		const css = ".cbgw-card{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);border-radius:10px;padding:0 14px 12px;display:flex;flex-direction:column}.cbgw-readOnly{color:var(--dsw-alias-label-tertiary);margin:10px 0 0;font-size:12px}.cbgw-field{display:flex;flex-direction:column;gap:6px;padding:12px 0}.cbgw-field+.cbgw-field{border-top:1px solid var(--dsw-alias-border-l2)}.cbgw-head{display:flex;align-items:center;gap:8px}.cbgw-label{min-width:0;color:var(--dsw-alias-label-primary);flex:1;font-size:13px;font-weight:500;line-height:1.5}.cbgw-badges{display:inline-flex;align-items:center;gap:8px}.cbgw-badge{white-space:nowrap;background:var(--dsw-alias-bg-module-platform);color:var(--dsw-alias-label-secondary);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:500;line-height:17px}.cbgw-badgeMuted{white-space:nowrap;color:var(--dsw-alias-label-tertiary);border-radius:999px;padding:1px 8px;font-size:11px;line-height:17px}.cbgw-reset{font:inherit;color:var(--dsw-alias-label-secondary);cursor:pointer;background:0;border:none;padding:0;font-size:12px;line-height:1.5}.cbgw-reset:hover:not(:disabled){color:var(--dsw-alias-label-primary)}.cbgw-reset:disabled{cursor:default}.cbgw-input{border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-3);height:34px;font:inherit;color:var(--dsw-alias-label-primary);border-radius:8px;padding:0 12px;font-size:13px;line-height:1.5}.cbgw-input:focus-visible{border-color:var(--dsw-alias-brand-primary);outline:none}.cbgw-textarea{height:auto;min-height:96px;max-height:280px;padding:8px 12px;resize:vertical;font-family:var(--dsw-font-mono, ui-monospace, monospace);line-height:1.6}.cbgw-hint{color:var(--dsw-alias-label-tertiary);margin:0;font-size:12px;line-height:1.5}.cbgw-invalid{color:var(--dsw-alias-label-error);margin:0;font-size:12px;line-height:1.5}.cbgw-footer{display:flex;justify-content:flex-end;align-items:center;gap:8px;padding-top:10px}.cbgw-pending{white-space:nowrap;background:var(--dsw-alias-bg-module-platform);color:var(--dsw-alias-label-secondary);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:500;line-height:17px;margin-right:auto}.cbgw-failed{color:var(--dsw-alias-label-error);margin:0 auto 0 0;font-size:12px}.cbgw-button{font:inherit;font-size:12px;cursor:pointer;border-radius:8px;padding:5px 12px;border:1px solid var(--dsw-alias-border-l2);background:0;color:var(--dsw-alias-label-secondary)}.cbgw-button:hover:not(:disabled){color:var(--dsw-alias-label-primary)}.cbgw-button:disabled{cursor:default;opacity:.5}.cbgw-primary{background:var(--dsw-alias-brand-primary);border-color:var(--dsw-alias-brand-primary);color:var(--dsw-alias-label-on-brand, #fff)}.cbgw-primary:hover:not(:disabled){color:var(--dsw-alias-label-on-brand, #fff);filter:brightness(1.05)}";
 		const tagId = "dsh-cannbot-gateway/card.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId) + "]") === null) {
 			const tag = document.createElement("style");
@@ -20,7 +20,7 @@ window.__ModuleLoader__.load({
 		const NS_LOCALE = "dsh-cannbot-gateway";
 		const zh = {
 			cardTitle: "Cannbot 网关",
-			cardDescription: "cannbot 虚拟密钥与网关连接（模型列表在 cordis.patch.yml 维护）",
+			cardDescription: "cannbot 虚拟密钥、网关连接与模型列表",
 			unavailable: "该插件当前未加载，暂时无法配置。",
 			readOnly: "本部署的设置为只读。",
 			unsaved: "未保存",
@@ -40,11 +40,14 @@ window.__ModuleLoader__.load({
 			gatewayURLLabel: "网关地址",
 			gatewayURLHint: "OpenAI 兼容网关地址。",
 			sessionFileLabel: "登录态文件",
-			sessionFileHint: "cannbot 的 session.json 路径，留默认自动探测新/旧位置。"
+			sessionFileHint: "cannbot 的 session.json 路径，留默认自动探测新/旧位置。",
+			modelsLabel: "模型列表",
+			modelsHint: "每行一个模型：模型ID | 名称 | 上下文窗口 | 最大输出；后三项可省略（默认 1048576 / 393216）。保存后立即生效。",
+			modelsInvalid: "模型列表格式不正确：每行至少填写模型ID，可选项用“ | ”分隔，最多四列。"
 		};
 		const en = {
 			cardTitle: "Cannbot Gateway",
-			cardDescription: "cannbot virtual key and gateway connection (model list lives in cordis.patch.yml)",
+			cardDescription: "cannbot virtual key, gateway connection, and model list",
 			unavailable: "This plugin is not loaded, so it cannot be configured right now.",
 			readOnly: "This deployment stores settings read-only.",
 			unsaved: "Unsaved",
@@ -64,7 +67,10 @@ window.__ModuleLoader__.load({
 			gatewayURLLabel: "Gateway URL",
 			gatewayURLHint: "OpenAI-compatible gateway endpoint.",
 			sessionFileLabel: "Session file",
-			sessionFileHint: "Path of cannbot's session.json; new and legacy locations are probed by default."
+			sessionFileHint: "Path of cannbot's session.json; new and legacy locations are probed by default.",
+			modelsLabel: "Model list",
+			modelsHint: "One model per line: id | name | context window | max output; the last two are optional (defaults 1048576 / 393216). Saving applies the list immediately.",
+			modelsInvalid: "Invalid model list: each line needs at least a model id; optional columns are separated by \" | \", four at most."
 		};
 		//#endregion
 		//#region lib/types/client/store.js
@@ -90,6 +96,24 @@ window.__ModuleLoader__.load({
 		//#endregion
 		//#region lib/types/client/fields.js
 		function ValueField(props) {
+			const control = props.multiline
+				? (0, react_jsx_runtime.jsx)("textarea", {
+					id: props.id,
+					className: "cbgw-input cbgw-textarea",
+					rows: props.rows ?? 4,
+					spellCheck: false,
+					value: props.text,
+					disabled: props.disabled,
+					onChange: (event) => { props.onEdit(event.target.value); }
+				})
+				: (0, react_jsx_runtime.jsx)("input", {
+					id: props.id,
+					className: "cbgw-input",
+					type: "text",
+					value: props.text,
+					disabled: props.disabled,
+					onChange: (event) => { props.onEdit(event.target.value); }
+				});
 			return (0, react_jsx_runtime.jsxs)("div", { className: "cbgw-field", children: [
 				(0, react_jsx_runtime.jsxs)("div", { className: "cbgw-head", children: [
 					(0, react_jsx_runtime.jsx)("label", { className: "cbgw-label", htmlFor: props.id, children: props.label }),
@@ -98,14 +122,7 @@ window.__ModuleLoader__.load({
 						(0, react_jsx_runtime.jsx)("button", { type: "button", className: "cbgw-reset", disabled: props.disabled, onClick: props.onReset, children: props.resetLabel })
 					] }) : null
 				] }),
-				(0, react_jsx_runtime.jsx)("input", {
-					id: props.id,
-					className: "cbgw-input",
-					type: "text",
-					value: props.text,
-					disabled: props.disabled,
-					onChange: (event) => { props.onEdit(event.target.value); }
-				}),
+				control,
 				props.invalid ? (0, react_jsx_runtime.jsx)("p", { className: "cbgw-invalid", children: props.invalidLabel }) : null,
 				(0, react_jsx_runtime.jsx)("p", { className: "cbgw-hint", children: props.hint })
 			] });
@@ -140,6 +157,45 @@ window.__ModuleLoader__.load({
 				parse: (text) => {
 					const trimmed = text.trim();
 					return trimmed === "" ? { kind: "clear" } : { kind: "set", value: trimmed };
+				}
+			};
+		}
+		/** 模型列表编辑器:一行一个模型,`模型ID | 名称 | 上下文窗口 | 最大输出`,后三项可省略。 */
+		function modelsField(field) {
+			return {
+				field,
+				format: (value) => Array.isArray(value)
+					? value
+						.filter((model) => model && typeof model.id === "string" && model.id.trim() !== "")
+						.map((model) => {
+							const parts = [model.id.trim(), model.name ?? "", model.contextWindow ?? "", model.maxTokens ?? ""].map((part) => String(part));
+							while (parts.length > 1 && parts[parts.length - 1] === "") parts.pop();
+							return parts.join(" | ");
+						})
+						.join("\n")
+					: "",
+				parse: (text) => {
+					const lines = text.split("\n").map((line) => line.trim()).filter((line) => line !== "");
+					if (lines.length === 0) return { kind: "clear" };
+					const models = [];
+					for (const line of lines) {
+						const parts = line.split("|").map((part) => part.trim());
+						if (parts[0] === "" || parts.length > 4) return undefined;
+						const model = { id: parts[0] };
+						if (parts[1]) model.name = parts[1];
+						if (parts[2] !== undefined) {
+							const contextWindow = Number(parts[2]);
+							if (!Number.isFinite(contextWindow) || contextWindow <= 0) return undefined;
+							model.contextWindow = Math.floor(contextWindow);
+						}
+						if (parts[3] !== undefined) {
+							const maxTokens = Number(parts[3]);
+							if (!Number.isFinite(maxTokens) || maxTokens <= 0) return undefined;
+							model.maxTokens = Math.floor(maxTokens);
+						}
+						models.push(model);
+					}
+					return { kind: "set", value: models };
 				}
 			};
 		}
@@ -339,18 +395,32 @@ window.__ModuleLoader__.load({
 						onEdit: (text) => { props.edit("gatewayURL", text); },
 						onReset: () => { props.resetField("gatewayURL"); }
 					}),
-					(0, react_jsx_runtime.jsx)(ValueField, {
-						id: "cannbot-gateway-session-file",
-						label: t("sessionFileLabel"),
-						hint: t("sessionFileHint"),
-						overriddenLabel: t("overridden"),
-						resetLabel: t("reset"),
-						invalidLabel: t("invalid"),
-						disabled,
-						...state.sessionFile,
-						onEdit: (text) => { props.edit("sessionFile", text); },
-						onReset: () => { props.resetField("sessionFile"); }
-					})
+				(0, react_jsx_runtime.jsx)(ValueField, {
+					id: "cannbot-gateway-session-file",
+					label: t("sessionFileLabel"),
+					hint: t("sessionFileHint"),
+					overriddenLabel: t("overridden"),
+					resetLabel: t("reset"),
+					invalidLabel: t("invalid"),
+					disabled,
+					...state.sessionFile,
+					onEdit: (text) => { props.edit("sessionFile", text); },
+					onReset: () => { props.resetField("sessionFile"); }
+				}),
+				(0, react_jsx_runtime.jsx)(ValueField, {
+					id: "cannbot-gateway-models",
+					multiline: true,
+					rows: 5,
+					label: t("modelsLabel"),
+					hint: t("modelsHint"),
+					overriddenLabel: t("overridden"),
+					resetLabel: t("reset"),
+					invalidLabel: t("modelsInvalid"),
+					disabled,
+					...state.models,
+					onEdit: (text) => { props.edit("models", text); },
+					onReset: () => { props.resetField("models"); }
+				})
 				]
 			});
 		}
@@ -373,7 +443,7 @@ window.__ModuleLoader__.load({
 			constructor(scope, ctx) {
 				this.scope = scope;
 				this.ctx = ctx;
-				this.form = new CardForm(scope, [textField("displayName"), textField("gatewayURL"), textField("sessionFile")], [{
+				this.form = new CardForm(scope, [textField("displayName"), textField("gatewayURL"), textField("sessionFile"), modelsField("models")], [{
 					field: VK_FIELD,
 					write: (text) => this.writeKey(text)
 				}]);
@@ -387,6 +457,7 @@ window.__ModuleLoader__.load({
 					displayName: this.form.field("displayName"),
 					gatewayURL: this.form.field("gatewayURL"),
 					sessionFile: this.form.field("sessionFile"),
+					models: this.form.field("models"),
 					vk: this.form.field(VK_FIELD),
 					vkConfigured: this.credential.configured,
 					vkWritable: this.credential.writable
